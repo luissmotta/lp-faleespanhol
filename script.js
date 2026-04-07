@@ -97,14 +97,14 @@ document.addEventListener('DOMContentLoaded', function () {
     const modalContent = document.getElementById('upsell-modal-content');
 
     if (basicPlanBtn && upsellModal) {
-        basicPlanBtn.addEventListener('click', function(e) {
+        basicPlanBtn.addEventListener('click', function (e) {
             e.preventDefault();
             // Show modal
             upsellModal.classList.remove('hidden');
             // Small delay to allow display class to apply before toggling opacity for transition
-            setTimeout(function() {
+            setTimeout(function () {
                 upsellModal.classList.remove('opacity-0');
-                if(modalContent) {
+                if (modalContent) {
                     modalContent.classList.remove('scale-95');
                     modalContent.classList.add('scale-100');
                 }
@@ -112,20 +112,20 @@ document.addEventListener('DOMContentLoaded', function () {
         });
 
         function closeModal(e) {
-            if(e) e.preventDefault();
+            if (e) e.preventDefault();
             upsellModal.classList.add('opacity-0');
-            if(modalContent) {
+            if (modalContent) {
                 modalContent.classList.remove('scale-100');
                 modalContent.classList.add('scale-95');
             }
-            setTimeout(function() {
+            setTimeout(function () {
                 upsellModal.classList.add('hidden');
             }, 300);
         }
 
         if (closeUpsellModal) closeUpsellModal.addEventListener('click', closeModal);
         if (continueBasic) {
-            continueBasic.addEventListener('click', function(e) {
+            continueBasic.addEventListener('click', function (e) {
                 e.preventDefault();
                 closeModal();
                 // User continues with basic plan
@@ -144,7 +144,7 @@ document.addEventListener('DOMContentLoaded', function () {
         var total = slides.length;
         var current = 0;
         var autoplayInterval = null;
-        var autoplayDelay = 2500;
+        var autoplayDelay = 4000;
 
         if (!slides.length) return;
 
@@ -238,4 +238,84 @@ document.addEventListener('DOMContentLoaded', function () {
         startAutoplay();
     })();
 
+    // ===== PURCHASE NOTIFICATIONS (SOCIAL PROOF) =====
+    (function () {
+        const names = [
+            'Ana Paula', 'Lucas Silva', 'Gabriel Santos', 'Julia Mendes', 'Ricardo Oliveira',
+            'Mariana Costa', 'Fernando Souza', 'Beatriz Lima', 'Thiago Rocha', 'Camila Alves',
+            'Bruno Ferreira', 'Letícia Gomes', 'Marcos Vinícius', 'Isabela Ribeiro', 'Rafael Machado',
+            'Larissa Neves', 'Rodrigo Silva', 'Vanessa Lima', 'Marcelo Diniz', 'Daniela Cruz'
+        ];
+
+        const cities = [
+            'São Paulo, SP', 'Rio de Janeiro, RJ', 'Belo Horizonte, MG', 'Curitiba, PR', 'Porto Alegre, RS',
+            'Salvador, BA', 'Fortaleza, CE', 'Brasília, DF', 'Manaus, AM', 'Recife, PE',
+            'Goiânia, GO', 'Belém, PA', 'Florianópolis, SC', 'Vitória, ES', 'Natal, RN'
+        ];
+
+        let activeNotification = null;
+
+        function getRandomItem(arr) {
+            return arr[Math.floor(Math.random() * arr.length)];
+        }
+
+        function createNotification() {
+            // Não mostra se houver uma notificação ativa ou se o modal de upsell estiver aberto
+            const modal = document.getElementById('upsell-modal');
+            const isModalOpen = modal && !modal.classList.contains('hidden');
+
+            if (activeNotification || isModalOpen) return;
+
+            const name = getRandomItem(names);
+            const city = getRandomItem(cities);
+            
+            const notification = document.createElement('div');
+            notification.className = 'purchase-notification';
+            notification.innerHTML = `
+                <div class="purchase-img">
+                    <span class="material-symbols-outlined" data-icon="verified" data-weight="fill">verified</span>
+                </div>
+                <div class="purchase-content">
+                    <span class="purchase-title">${name}</span>
+                    <span class="purchase-desc">Acabou de comprar o <strong style="color: #22c55e;">Pacote Premium</strong></span>
+                    <span class="purchase-time">há 2 minutos • de ${city}</span>
+                </div>
+            `;
+
+            document.body.appendChild(notification);
+            activeNotification = notification;
+
+            // Show with a small delay
+            setTimeout(() => {
+                notification.classList.add('show');
+            }, 100);
+
+            // Hide and remove after 6 seconds
+            setTimeout(() => {
+                notification.classList.remove('show');
+                setTimeout(() => {
+                    notification.remove();
+                    activeNotification = null;
+                }, 600);
+            }, 6000);
+        }
+
+        function scheduleNext() {
+            const delay = Math.floor(Math.random() * (18000 - 8000) + 8000); // Entre 8s e 18s
+            setTimeout(() => {
+                createNotification();
+                scheduleNext();
+            }, delay);
+        }
+
+        // Inicia após 5 segundos
+        setTimeout(() => {
+            createNotification();
+            scheduleNext();
+        }, 5000);
+    })();
+
+
+
 });
+
