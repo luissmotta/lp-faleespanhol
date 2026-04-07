@@ -101,6 +101,9 @@ document.addEventListener('DOMContentLoaded', function () {
             e.preventDefault();
             // Show modal
             upsellModal.classList.remove('hidden');
+            // Remove any active purchase notification to avoid covering the modal
+            document.querySelectorAll('.purchase-notification').forEach(n => n.remove());
+
             // Small delay to allow display class to apply before toggling opacity for transition
             setTimeout(function () {
                 upsellModal.classList.remove('opacity-0');
@@ -277,8 +280,8 @@ document.addEventListener('DOMContentLoaded', function () {
                 </div>
                 <div class="purchase-content">
                     <span class="purchase-title">${name}</span>
-                    <span class="purchase-desc">Acabou de comprar o <strong style="color: #22c55e;">Pacote Premium</strong></span>
-                    <span class="purchase-time">há 2 minutos • de ${city}</span>
+                    <span class="purchase-desc">Acabou de adquirir o <strong style="color: #22c55e;">Pacote Premium</strong></span>
+                    <span class="purchase-time">há poucos segundos • de ${city}</span>
                 </div>
             `;
 
@@ -301,19 +304,20 @@ document.addEventListener('DOMContentLoaded', function () {
         }
 
         function scheduleNext() {
-            const delay = Math.floor(Math.random() * (18000 - 8000) + 8000); // Entre 8s e 18s
+            const delay = Math.floor(Math.random() * (45000 - 20000) + 20000); // Entre 20s e 45s
             setTimeout(() => {
                 createNotification();
                 scheduleNext();
             }, delay);
         }
 
-        // Inicia após 5 segundos
+        // Inicia após 3 segundos
         setTimeout(() => {
             createNotification();
             scheduleNext();
-        }, 5000);
+        }, 3000);
     })();
+
 
 
 
