@@ -130,11 +130,15 @@ document.addEventListener('DOMContentLoaded', function () {
         if (continueBasic) {
             continueBasic.addEventListener('click', function (e) {
                 e.preventDefault();
+                const checkoutUrl = this.getAttribute('href');
                 closeModal();
-                // User continues with basic plan
-                console.log("Proceeding with basic plan (R$ 10)");
+                // Pequeno delay para a animação de fechar antes de redirecionar
+                setTimeout(() => {
+                    window.location.href = checkoutUrl;
+                }, 350);
             });
         }
+
     }
 
     // ===== TESTIMONIALS CAROUSEL =====
