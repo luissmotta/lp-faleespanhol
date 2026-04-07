@@ -133,4 +133,109 @@ document.addEventListener('DOMContentLoaded', function () {
             });
         }
     }
+
+    // ===== TESTIMONIALS CAROUSEL =====
+    (function () {
+        var slides = document.querySelectorAll('.depo-slide');
+        var dots = document.querySelectorAll('.depo-dot');
+        var prevBtn = document.getElementById('depo-prev');
+        var nextBtn = document.getElementById('depo-next');
+        var counterEl = document.getElementById('depo-current');
+        var total = slides.length;
+        var current = 0;
+        var autoplayInterval = null;
+        var autoplayDelay = 2500;
+
+        if (!slides.length) return;
+
+        function goTo(index) {
+            // Wrap around
+            if (index < 0) index = total - 1;
+            if (index >= total) index = 0;
+
+            slides.forEach(function (slide, i) {
+                if (i === index) {
+                    slide.style.opacity = '1';
+                    slide.style.position = 'relative';
+                    slide.style.zIndex = '2';
+                    slide.style.transform = 'scale(1)';
+                } else {
+                    slide.style.opacity = '0';
+                    slide.style.position = 'absolute';
+                    slide.style.zIndex = '1';
+                    slide.style.transform = 'scale(0.97)';
+                }
+            });
+
+            dots.forEach(function (dot, i) {
+                if (i === index) {
+                    dot.classList.remove('bg-zinc-300');
+                    dot.classList.add('bg-primary', 'shadow-md', 'scale-110');
+                } else {
+                    dot.classList.add('bg-zinc-300');
+                    dot.classList.remove('bg-primary', 'shadow-md', 'scale-110');
+                }
+            });
+
+            if (counterEl) counterEl.textContent = (index + 1).toString();
+            current = index;
+        }
+
+        function next() { goTo(current + 1); }
+        function prev() { goTo(current - 1); }
+
+        function startAutoplay() {
+            stopAutoplay();
+            autoplayInterval = setInterval(next, autoplayDelay);
+        }
+
+        function stopAutoplay() {
+            if (autoplayInterval) clearInterval(autoplayInterval);
+        }
+
+        // Button events
+        if (nextBtn) nextBtn.addEventListener('click', function () { next(); startAutoplay(); });
+        if (prevBtn) prevBtn.addEventListener('click', function () { prev(); startAutoplay(); });
+
+        // Dot events
+        dots.forEach(function (dot) {
+            dot.addEventListener('click', function () {
+                goTo(parseInt(this.getAttribute('data-index')));
+                startAutoplay();
+            });
+        });
+
+        // Touch/swipe support
+        var wrapper = document.getElementById('depo-carousel-wrapper');
+        if (wrapper) {
+            var touchStartX = 0;
+            var touchEndX = 0;
+
+            wrapper.addEventListener('touchstart', function (e) {
+                touchStartX = e.changedTouches[0].screenX;
+                stopAutoplay();
+            }, { passive: true });
+
+            wrapper.addEventListener('touchend', function (e) {
+                touchEndX = e.changedTouches[0].screenX;
+                var diff = touchStartX - touchEndX;
+                if (Math.abs(diff) > 50) {
+                    if (diff > 0) next(); else prev();
+                }
+                startAutoplay();
+            }, { passive: true });
+        }
+
+        // Pause on hover (desktop)
+        var carouselSection = document.querySelector('.testimonials-section');
+        if (carouselSection) {
+            carouselSection.addEventListener('mouseenter', stopAutoplay);
+            carouselSection.addEventListener('mouseleave', startAutoplay);
+        }
+
+        // Init
+        goTo(0);
+        startAutoplay();
+    })();
+
 });
